@@ -28,7 +28,7 @@ class FragmentHome : Fragment() {
         val retrofit = RetroFit()
         val adapter = DataAdapter(context!!)
         recyclerView.adapter = adapter
-        retrofit.service.listRepos("MindorksOpenSource")
+        retrofit.service.listRepos("ankit422")
             .enqueue(object : Callback<MutableList<Repo>> {
                 override fun onResponse(
                     call: Call<MutableList<Repo>>,
