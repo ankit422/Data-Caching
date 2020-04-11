@@ -7,25 +7,34 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.RecyclerView
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
 
 class FragmentHome : Fragment() {
+    private lateinit var rootView: View
+
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val retrofit = RetroFit()
+        rootView = inflater.inflate(R.layout.fragment_view, container, false)
 
+        val recyclerView = rootView.findViewById<RecyclerView>(R.id.recycler_view)
+        val retrofit = RetroFit()
+        val adapter = DataAdapter(context!!)
+        recyclerView.adapter = adapter
         retrofit.service.listRepos("MindorksOpenSource")
             .enqueue(object : Callback<MutableList<Repo>> {
                 override fun onResponse(
                     call: Call<MutableList<Repo>>,
                     response: Response<MutableList<Repo>>
                 ) {
+                    adapter.setData(response.body())
                     Toast.makeText(
                         context, (response.body()?.size ?: 0).toString(),
                         Toast.LENGTH_SHORT
@@ -34,15 +43,14 @@ class FragmentHome : Fragment() {
 
                 override fun onFailure(call: Call<MutableList<Repo>>, t: Throwable?) {
                     //Handle failure
-                    Log.e("error",(t?.cause ?: "something").toString())
+                    Log.e("error", (t?.cause ?: "something").toString())
                     Toast.makeText(
                         context, (t?.cause ?: "something").toString(),
                         Toast.LENGTH_SHORT
                     ).show()
                 }
             })
-
-        return inflater.inflate(R.layout.fragment_view, container, false)
+        return rootView
     }
 
     fun getInstance(i: String): FragmentHome {
